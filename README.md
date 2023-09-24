@@ -3,10 +3,10 @@
 ### Setup
 
 1. ```shell
-    git clone https://github.com/Nilet/escola-ti-scrapers
+    git clone https://github.com/Nilet/autohub-scrapers
     ```
 2. ```shell
-    cd escola-ti-scrapers
+    cd autohub-scrapers
     ```
 3. ```shell
     source .venv/bin/activate
