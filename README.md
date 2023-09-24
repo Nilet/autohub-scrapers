@@ -2,6 +2,7 @@
 
 ### Setup
 
+
 1. ```shell
     git clone https://github.com/Nilet/autohub-scrapers
     ```
@@ -9,9 +10,13 @@
     cd autohub-scrapers
     ```
 3. ```shell
+    python -m venv .venv
+   ```
+
+4. ```shell
     source .venv/bin/activate
     ```
-4. ```shell
+5. ```shell
     pip -r requirements.txt
     ```
 
@@ -23,9 +28,11 @@
         ```
 
 - Rodar o script referente ao site desejado
-    - Olx: ```shell
-            python olx/olx.py
-            ```
-    - Mercado Livre: ```shell
-                        python mercadolivre/ml.py
-                        ```
+    - Olx: 
+    ```shell
+    python olx/olx.py
+    ```
+    - Mercado Livre: 
+    ```shell
+    python mercadolivre/ml.py
+    ```
