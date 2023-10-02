@@ -4,7 +4,7 @@
 
 
 1. ```shell
-    git clone https://github.com/Nilet/autohub-scrapers
+    git clone http://escoladeti.unicesumar.edu.br:8083/escoladeti2023/003timeescoladeti2023/scrapers
     ```
 2. ```shell
     cd autohub-scrapers
