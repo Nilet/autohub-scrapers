@@ -2,10 +2,14 @@
 
 from bs4 import BeautifulSoup
 import requests
+import os
 
 
-def lerArquivo(path):
-    return open(path).read().strip().replace(' ', '%20').split('\n')
+def lerArquivo(filename):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(script_dir, filename)
+
+    return open(file_path).read().strip().replace(' ', '%20').split('\n')
 
 
 def busca_veiculo(veiculo):
@@ -13,7 +17,8 @@ def busca_veiculo(veiculo):
         f"https://lista.mercadolivre.com.br/veiculos-em-parana/{veiculo}_NoIndex_True")
     soup = BeautifulSoup(r.text, 'html.parser')
 
-    print(f"https://lista.mercadolivre.com.br/veiculos-em-parana/{veiculo}_NoIndex_True")
+    print(
+        f"https://lista.mercadolivre.com.br/veiculos-em-parana/{veiculo}_NoIndex_True")
     containers = soup.find_all(
         'div', {'class': 'ui-search-result__wrapper'})
 

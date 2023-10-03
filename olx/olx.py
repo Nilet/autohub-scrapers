@@ -1,11 +1,14 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from time import sleep
 from bs4 import BeautifulSoup
+import os
 
 
-def lerArquivo(path):
-    return open(path).read().strip().replace(' ', '%20').split('\n')
+def lerArquivo(filename):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(script_dir, filename)
+
+    return open(file_path).read().strip().replace(' ', '%20').split('\n')
 
 
 def buscaVeiculo(veiculo):
@@ -27,17 +30,20 @@ def buscaVeiculo(veiculo):
     soup = BeautifulSoup(source, 'lxml')
     links = []
     links = soup.find_all(class_='dFgPSB')
+    if links == []:
+        links = soup.find_all(class_='dPstMh')
 
     veiculos = []
+
     for link in links:
         produto = ''
         try:
-            produto = link.find('h2', {'class': 'title'}).text
+            produto = link.find('h2').text
         except:
             continue
         url = link.find('a')['href']
         try:
-            price = link.find(class_='price').text.replace('R$ ', '')
+            price = link.find('h3').text.replace('R$ ', '')
         except:
             temp = link.find(class_='old-price')
             if (temp != None):
@@ -54,12 +60,11 @@ def buscaVeiculo(veiculo):
     print()
 
 
-veiculos = lerArquivo("./veiculos.txt")
-
+veiculos = lerArquivo("veiculos.txt")
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')
 options.add_argument('--windows-size=1920x1080')
-driver = webdriver.Chrome(options=options)
+driver = webdriver.Chrome()
 for veiculo in veiculos:
     buscaVeiculo(veiculo)
 driver.quit()
