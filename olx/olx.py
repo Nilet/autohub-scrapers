@@ -11,7 +11,7 @@ def lerArquivo(filename):
     return open(file_path).read().strip().replace(' ', '%20').split('\n')
 
 
-def buscaVeiculo(veiculo):
+def OLX_buscaVeiculo(veiculo, driver):
 
     driver.get(
         f"https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-pr?q={veiculo}")
@@ -58,13 +58,3 @@ def buscaVeiculo(veiculo):
     for fusca in veiculos:
         print(fusca)
     print()
-
-
-veiculos = lerArquivo("veiculos.txt")
-options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-options.add_argument('--windows-size=1920x1080')
-driver = webdriver.Chrome()
-for veiculo in veiculos:
-    buscaVeiculo(veiculo)
-driver.quit()

@@ -12,7 +12,7 @@ def lerArquivo(filename):
     return open(file_path).read().strip().replace(' ', '%20').split('\n')
 
 
-def busca_veiculo(veiculo):
+def ML_buscaVeiculo(veiculo):
     r = requests.get(
         f"https://lista.mercadolivre.com.br/veiculos-em-parana/{veiculo}_NoIndex_True")
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -24,8 +24,8 @@ def busca_veiculo(veiculo):
 
     veiculos = []
     for container in containers:
-        veiculoNome = container.find('div', {
-            'class': 'ui-search-item__group ui-search-item__group--title shops__items-group'}).text
+        veiculoNome = container.find('h2', {
+            'class': 'ui-search-item__title'}).text
         preco = container.find(
             'span', {'class': 'andes-money-amount__fraction'}).text
 
@@ -33,7 +33,7 @@ def busca_veiculo(veiculo):
 
         veiculoImg = container.find('img')['data-src']
         local = container.find('span', {
-            'class': 'ui-search-item__group__element ui-search-item__location shops__items-group-details'
+            'class': 'ui-search-item__group__element ui-search-item__location'
         }).text
 
         veiculos.append(
@@ -46,7 +46,7 @@ def busca_veiculo(veiculo):
 def main():
     veiculos = lerArquivo("./veiculos.txt")
     for veiculo in veiculos:
-        busca_veiculo(veiculo)
+        ML_buscaVeiculo(veiculo)
 
 
 if __name__ == '__main__':
