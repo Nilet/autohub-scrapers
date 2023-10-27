@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-
 from bs4 import BeautifulSoup
 import requests
 import os
+import pymongo
 
+# Função para conectar ao MongoDB
+def conectar_mongodb():
+    client = pymongo.MongoClient("mongodb://localhost:27017")
+    db = client["nome_do_seu_banco_de_dados"]
+    collection = db["nome_da_sua_colecao"]
+    return collection
 
 def lerArquivo(filename):
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -11,14 +17,22 @@ def lerArquivo(filename):
 
     return open(file_path).read().strip().replace(' ', '%20').split('\n')
 
+# Função para inserir os dados no MongoDB
+def inserir_dados_mongodb(collection, veiculoNome, veiculoUrl, preco, local, veiculoImg):
+    data_to_insert = {
+        "veiculo": veiculoNome,
+        "url": veiculoUrl,
+        "price": preco,
+        "local": local,
+        "veiculoImg": veiculoImg
+    }
+    collection.insert_one(data_to_insert)
 
-def ML_buscaVeiculo(veiculo):
+def ML_buscaVeiculo(veiculo, collection):
     r = requests.get(
         f"https://lista.mercadolivre.com.br/veiculos-em-parana/{veiculo}_NoIndex_True")
     soup = BeautifulSoup(r.text, 'html.parser')
 
-    print(
-        f"https://lista.mercadolivre.com.br/veiculos-em-parana/{veiculo}_NoIndex_True")
     containers = soup.find_all(
         'div', {'class': 'ui-search-result__wrapper'})
 
@@ -38,16 +52,18 @@ def ML_buscaVeiculo(veiculo):
 
         veiculos.append(
             dict(veiculo=veiculoNome, url=veiculoUrl, price=preco, local=local, veiculoImg=veiculoImg))
-    for fusca in veiculos:
-        print(fusca)
-    print()
 
+        for fusca in veiculos:
+            print(fusca)
+            inserir_dados_mongodb(collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"])
+
+    print()
 
 def main():
     veiculos = lerArquivo("./veiculos.txt")
+    collection = conectar_mongodb()
     for veiculo in veiculos:
-        ML_buscaVeiculo(veiculo)
-
+        ML_buscaVeiculo(veiculo, collection)
 
 if __name__ == '__main__':
     main()
