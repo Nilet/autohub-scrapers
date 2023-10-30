@@ -7,8 +7,8 @@ import pymongo
 # Função para conectar ao MongoDB
 def conectar_mongodb():
     client = pymongo.MongoClient("mongodb://localhost:27017")
-    db = client["nome_do_seu_banco_de_dados"]
-    collection = db["nome_da_sua_colecao"]
+    db = client["autohub"]
+    collection = db["veiculos"]
     return collection
 
 def lerArquivo(filename):
@@ -24,7 +24,8 @@ def inserir_dados_mongodb(collection, veiculoNome, veiculoUrl, preco, local, vei
         "url": veiculoUrl,
         "price": preco,
         "local": local,
-        "veiculoImg": veiculoImg
+        "veiculoImg": veiculoImg,
+        "origem": "ML"
     }
     collection.insert_one(data_to_insert)
 
