@@ -5,19 +5,39 @@ import os
 import pymongo
 
 # Função para conectar ao MongoDB
+
+
 def conectar_mongodb():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client["nome_do_seu_banco_de_dados"]
-    collection = db["nome_da_sua_colecao"]
+    db = client["autohub"]
+    collection = db["veiculos"]
     return collection
 
+# Função para inserir os dados no MongoDB
+
+
+def inserir_dados_mongodb(collection, veiculoNome, veiculoUrl, preco, local, veiculoImg):
+    data_to_insert = {
+        "veiculo": veiculoNome,
+        "url": veiculoUrl,
+        "price": preco,
+        "local": local,
+        "veiculoImg": veiculoImg,
+        "origem": "OLX"
+    }
+    collection.insert_one(data_to_insert)
+
 # Função para ler o arquivo
+
+
 def lerArquivo(filename):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, filename)
     return open(file_path).read().strip().replace(' ', '%20').split('\n')
 
 # Função para buscar veículos na OLX e armazenar no MongoDB
+
+
 def OLX_buscaVeiculo(veiculo, driver, collection):
     driver.get(
         f"https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/estado-pr?q={veiculo}")
@@ -59,15 +79,18 @@ def OLX_buscaVeiculo(veiculo, driver, collection):
 
         img = link.find('source')['srcset']
 
-        veiculos.append(dict(veiculo=produto, url=url, price=price, veiculoImg=img))
+        veiculos.append(dict(veiculo=produto, url=url,
+                        price=price, veiculoImg=img))
 
     for fusca in veiculos:
         print(fusca)
         # Insira os dados no MongoDB
-        inserir_dados_mongodb(collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["veiculoImg"])
+        inserir_dados_mongodb(collection, fusca["veiculo"], fusca["url"], fusca["price"], "", fusca["veiculoImg"])
     print()
 
 # Função principal
+
+
 def main():
     veiculos = lerArquivo("./veiculos.txt")
     collection = conectar_mongodb()
@@ -75,6 +98,7 @@ def main():
     for veiculo in veiculos:
         OLX_buscaVeiculo(veiculo, driver, collection)
     driver.quit()
+
 
 if __name__ == '__main__':
     main()
