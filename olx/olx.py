@@ -4,16 +4,12 @@ from bs4 import BeautifulSoup
 import os
 import pymongo
 
-# Função para conectar ao MongoDB
-
 
 def conectar_mongodb():
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client["autohub"]
     collection = db["veiculos"]
     return collection
-
-# Função para inserir os dados no MongoDB
 
 
 def inserir_dados_mongodb(collection, veiculoNome, veiculoUrl, preco, local, veiculoImg):
@@ -27,15 +23,11 @@ def inserir_dados_mongodb(collection, veiculoNome, veiculoUrl, preco, local, vei
     }
     collection.insert_one(data_to_insert)
 
-# Função para ler o arquivo
-
 
 def lerArquivo(filename):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, filename)
     return open(file_path).read().strip().replace(' ', '%20').split('\n')
-
-# Função para buscar veículos na OLX e armazenar no MongoDB
 
 
 def OLX_buscaVeiculo(veiculo, driver, collection):
@@ -55,7 +47,7 @@ def OLX_buscaVeiculo(veiculo, driver, collection):
 
     soup = BeautifulSoup(source, 'lxml')
     links = []
-    links = soup.find_all(class_='dFgPSB')
+    links = soup.find_all(class_='olx-ad-card olx-ad-card--vertical')
     if links == []:
         links = soup.find_all(class_='dPstMh')
 
@@ -76,16 +68,23 @@ def OLX_buscaVeiculo(veiculo, driver, collection):
                 price = temp.text.replace('R$ ', '')
             else:
                 continue
+        local = ""
+        try:
+            local = link.find(
+                class_="olx-ad-card__location olx-ad-card__location--vertical").find("p").text
+        except:
+            pass
 
         img = link.find('source')['srcset']
 
         veiculos.append(dict(veiculo=produto, url=url,
-                        price=price, veiculoImg=img))
+                        price=price, veiculoImg=img, local=local))
 
     for fusca in veiculos:
         print(fusca)
         # Insira os dados no MongoDB
-        inserir_dados_mongodb(collection, fusca["veiculo"], fusca["url"], fusca["price"], "", fusca["veiculoImg"])
+        inserir_dados_mongodb(
+            collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"])
     print()
 
 # Função principal
