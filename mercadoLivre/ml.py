@@ -1,33 +1,8 @@
 #!/usr/bin/env python3
 from bs4 import BeautifulSoup
 import requests
-import os
-import pymongo
+from utils.utils import conectar_mongodb, inserir_dados_mongodb, lerArquivo
 
-# Função para conectar ao MongoDB
-def conectar_mongodb():
-    client = pymongo.MongoClient("mongodb://localhost:27017")
-    db = client["autohub"]
-    collection = db["veiculos"]
-    return collection
-
-def lerArquivo(filename):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(script_dir, filename)
-
-    return open(file_path).read().strip().replace(' ', '%20').split('\n')
-
-# Função para inserir os dados no MongoDB
-def inserir_dados_mongodb(collection, veiculoNome, veiculoUrl, preco, local, veiculoImg):
-    data_to_insert = {
-        "veiculo": veiculoNome,
-        "url": veiculoUrl,
-        "price": preco,
-        "local": local,
-        "veiculoImg": veiculoImg,
-        "origem": "ML"
-    }
-    collection.insert_one(data_to_insert)
 
 def ML_buscaVeiculo(veiculo, collection):
     r = requests.get(
@@ -56,15 +31,18 @@ def ML_buscaVeiculo(veiculo, collection):
 
         for fusca in veiculos:
             print(fusca)
-            inserir_dados_mongodb(collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"])
+            inserir_dados_mongodb(
+                collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"], "ML")
 
     print()
+
 
 def main():
     veiculos = lerArquivo("./veiculos.txt")
     collection = conectar_mongodb()
     for veiculo in veiculos:
         ML_buscaVeiculo(veiculo, collection)
+
 
 if __name__ == '__main__':
     main()
