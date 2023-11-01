@@ -1,33 +1,7 @@
 from selenium import webdriver
 from time import sleep
 from bs4 import BeautifulSoup
-import os
-import pymongo
-
-
-def conectar_mongodb():
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = client["autohub"]
-    collection = db["veiculos"]
-    return collection
-
-
-def inserir_dados_mongodb(collection, veiculoNome, veiculoUrl, preco, local, veiculoImg):
-    data_to_insert = {
-        "veiculo": veiculoNome,
-        "url": veiculoUrl,
-        "price": preco,
-        "local": local,
-        "veiculoImg": veiculoImg,
-        "origem": "OLX"
-    }
-    collection.insert_one(data_to_insert)
-
-
-def lerArquivo(filename):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(script_dir, filename)
-    return open(file_path).read().strip().replace(' ', '%20').split('\n')
+from utils.utils import conectar_mongodb, inserir_dados_mongodb, lerArquivo
 
 
 def OLX_buscaVeiculo(veiculo, driver, collection):
@@ -64,7 +38,7 @@ def OLX_buscaVeiculo(veiculo, driver, collection):
             price = link.find('h3').text.replace('R$ ', '')
         except:
             temp = link.find(class_='old-price')
-            if (temp != None):
+            if (temp is not None):
                 price = temp.text.replace('R$ ', '')
             else:
                 continue
@@ -84,7 +58,7 @@ def OLX_buscaVeiculo(veiculo, driver, collection):
         print(fusca)
         # Insira os dados no MongoDB
         inserir_dados_mongodb(
-            collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"])
+            collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"], "OLX")
     print()
 
 # Função principal
