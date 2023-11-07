@@ -13,11 +13,12 @@ def ML_buscaVeiculo(veiculo, collection):
         'div', {'class': 'ui-search-result__wrapper'})
 
     veiculos = []
+
     for container in containers:
         veiculoNome = container.find('h2', {
             'class': 'ui-search-item__title'}).text
-        preco = container.find(
-            'span', {'class': 'andes-money-amount__fraction'}).text
+        preco = int(container.find(
+            'span', {'class': 'andes-money-amount__fraction'}).text.replace(".", ""))
 
         veiculoUrl = container.find('a')['href']
 

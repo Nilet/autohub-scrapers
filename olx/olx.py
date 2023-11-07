@@ -35,7 +35,7 @@ def OLX_buscaVeiculo(veiculo, driver, collection):
             continue
         url = link.find('a')['href']
         try:
-            price = link.find('h3').text.replace('R$ ', '')
+            price = int(link.find('h3').text.replace('R$ ', '').replace(".", ""))
         except:
             temp = link.find(class_='old-price')
             if (temp is not None):
@@ -61,13 +61,10 @@ def OLX_buscaVeiculo(veiculo, driver, collection):
             collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"], "OLX")
     print()
 
-# Função principal
-
-
 def main():
     veiculos = lerArquivo("./veiculos.txt")
     collection = conectar_mongodb()
-    driver = webdriver.Chrome()  # Substitua pelo seu driver
+    driver = webdriver.Chrome() 
     for veiculo in veiculos:
         OLX_buscaVeiculo(veiculo, driver, collection)
     driver.quit()
