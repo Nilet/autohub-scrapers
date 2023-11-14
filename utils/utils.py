@@ -18,13 +18,15 @@ def conectar_mongodb():
     return collection
 
 
-def inserir_dados_mongodb(collection, veiculoNome, veiculoUrl, preco, local, veiculoImg, origem):
+def inserir_dados_mongodb(collection, veiculoNome, veiculoUrl, preco, local, veiculoImg, km, ano, origem):
     data_to_insert = {
         "veiculo": veiculoNome,
         "url": veiculoUrl,
         "price": preco,
         "local": local,
         "veiculoImg": veiculoImg,
+        "km": km,
+        "ano": ano,
         "origem": origem
     }
     collection.insert_one(data_to_insert)
