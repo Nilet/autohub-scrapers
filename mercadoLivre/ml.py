@@ -20,6 +20,12 @@ def ML_buscaVeiculo(veiculo, collection):
         preco = int(container.find(
             'span', {'class': 'andes-money-amount__fraction'}).text.replace(".", ""))
 
+        detalhes = container.find_all('li', {
+            'class': 'ui-search-card-attributes__attribute'
+        })
+        ano = int(detalhes[0].text)
+        km = int(detalhes[1].text.replace(".", "").replace(" Km", ""))
+
         veiculoUrl = container.find('a')['href']
 
         veiculoImg = container.find('img')['data-src']
@@ -28,13 +34,14 @@ def ML_buscaVeiculo(veiculo, collection):
         }).text
 
         veiculos.append(
-            dict(veiculo=veiculoNome, url=veiculoUrl, price=preco, local=local, veiculoImg=veiculoImg))
+            dict(veiculo=veiculoNome, url=veiculoUrl, price=preco, local=local, veiculoImg=veiculoImg,
+                 km=km, ano=ano))
 
         for fusca in veiculos:
             print(fusca)
             inserir_dados_mongodb(
-                collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"], "ML")
-
+                collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"],
+                fusca["km"], fusca["ano"], "ML")
     print()
 
 

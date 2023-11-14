@@ -33,11 +33,12 @@ def OLX_buscaVeiculo(veiculo, driver, collection):
             produto = link.find('h2').text
         except:
             continue
-        url = link.find('a')['href']
+        url = link.find(class_='olx-ad-card__title-link')['href']
         try:
-            price = int(link.find('h3').text.replace('R$ ', '').replace(".", ""))
+            price = int(link.find('h3').text.replace(
+                'R$ ', '').replace(".", ""))
         except:
-            temp = link.find(class_='old-price')
+            temp = link.find(class_='olx-ad-card__price')
             if (temp is not None):
                 price = temp.text.replace('R$ ', '')
             else:
@@ -45,26 +46,38 @@ def OLX_buscaVeiculo(veiculo, driver, collection):
         local = ""
         try:
             local = link.find(
-                class_="olx-ad-card__location olx-ad-card__location--vertical").find("p").text
+                class_="olx-ad-card__location-date-container").find("p").text
         except:
             pass
+
+        km = 0
+        ano = 0
+        try:
+            dados = link.find_all(class_='olx-ad-card__labels-item')
+            km = int(dados[0].text.replace(".", "").replace(" km", ""))
+            ano = int(dados[1].text)
+        except:
+            km = 0
+            ano = 0
 
         img = link.find('source')['srcset']
 
         veiculos.append(dict(veiculo=produto, url=url,
-                        price=price, veiculoImg=img, local=local))
+                        price=price, veiculoImg=img, local=local,
+                             km=km, ano=ano))
 
     for fusca in veiculos:
         print(fusca)
-        # Insira os dados no MongoDB
         inserir_dados_mongodb(
-            collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"], "OLX")
+            collection, fusca["veiculo"], fusca["url"], fusca["price"], fusca["local"], fusca["veiculoImg"],
+            fusca["km"], fusca["ano"], "OLX")
     print()
+
 
 def main():
     veiculos = lerArquivo("./veiculos.txt")
     collection = conectar_mongodb()
-    driver = webdriver.Chrome() 
+    driver = webdriver.Chrome()
     for veiculo in veiculos:
         OLX_buscaVeiculo(veiculo, driver, collection)
     driver.quit()

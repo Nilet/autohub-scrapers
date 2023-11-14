@@ -13,11 +13,11 @@ class ScrapeThread(threading.Thread):
 
     def run(self):
         options = webdriver.ChromeOptions()
-        options.add_argument("--verbose")
-        options.add_argument('--no-sandbox')
-        options.add_argument('--headless=new')
-        options.add_argument('--disable-gpu')
-        options.add_argument('--remote-debugging-port=9222')
+        # options.add_argument("--verbose")
+        # options.add_argument('--no-sandbox')
+        options.add_argument('--headless')
+        # options.add_argument('--disable-gpu')
+        # options.add_argument('--remote-debugging-port=9222')
         options.add_argument('--windows-size=1920x1080')
         driver = webdriver.Chrome(options=options)
         OLX_buscaVeiculo(self.veiculo, driver, collection)
